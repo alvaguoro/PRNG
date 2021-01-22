@@ -101,11 +101,14 @@ int main(int argc, char* argv[])
 		FuncionF(0, 0);
 	}
 		
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < 1000; i++) {
 		BR();
 		LFSR(1);
 		FuncionF(0, 0);
 		if(i > 99)
 			std::cout << std::bitset< 32 >(z) << ' ' << '\n';
 	}
+
+	printf("\nPulse una tecla para finalizar");
+	getchar();
 }
