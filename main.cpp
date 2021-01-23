@@ -1,17 +1,16 @@
 #include <iostream>
 #include <bitset>
-#include <time.h>
+#include <ctime>
 
-unsigned int s0; unsigned int s1; unsigned  int s2; unsigned int s3; unsigned int s4; unsigned int s5; unsigned int s6; unsigned int s7;
-unsigned int s8; unsigned int s9; unsigned int s10; unsigned int s11; unsigned int s12; unsigned int s13; unsigned int s14; unsigned int s15; unsigned int s16;
+unsigned long s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16;
 
-unsigned  int x0; unsigned int x1; unsigned int x2; unsigned int x3;
+unsigned long x0, x1, x2, x3;
 
-unsigned int r1; unsigned int r2;
+unsigned long r1, r2;
 
- int f1; int f2;
+unsigned long f1, f2;
 
- int d; int d1; int d2; int z;
+long d, d1, d2, z;
 
 
 double x_aux = 0.0;
@@ -49,20 +48,21 @@ void FuncionF(double x, double y)
 	z = d ^ x3;
 }
 
-void init() 
+void init() //Inicializamos todos los registros iniciales
 {
-	s0 = 0xf8b92f67; s1 = 0x6e3a53b5; s2 = 0x48ad2eed; s3 = 0x956f5e42; s4 = 0xf9e9b01a; s5 = 0x962d97c0; s6 = 0x724cff09; s7 = 0x932f2f93;
-	s8 = 0xb8147c3e; s9 = 0x0ada63aa; s10 = 0xc847a5e8; s11 = 0x3cbd4881; s12 = 0xf8d16c50; s13 = 0xda3dc12c;s14 = 0x1d3994e1;s15 = 0xfbb5db2a;
+	srand(time(NULL));
+	s0 = rand(); s1 = rand(); s2 = rand(); s3 = rand(); s4 = rand(); s5 = rand(); s6 = rand(); s7 = rand();
+	s8 = rand(); s9 = rand(); s10 = rand(); s11 = rand(); s12 = rand(); s13 = rand();s14 = rand();s15 = rand();
 
-	r1 = 0x1340c615;
-	r2 = 0xb4252095;
+	r1 = rand();
+	r2 = rand();
 
 	FuncionF(-0.2306260232230942, 0.42841027518257125);
 }
 
-void BR()
+void BR() //Reorganizacion de bits
 {
-	unsigned int auxx1, auxx2;
+	unsigned long auxx1, auxx2;
 	auxx1 = s15 & 0xffff0000; auxx2 = s14 & 0x0000ffff;
 	x0 = auxx1 | auxx2;
 	auxx1 = s9 & 0xffff0000; auxx2 = s11 & 0x0000ffff;
@@ -75,17 +75,17 @@ void BR()
 
 void LFSR(int modo)
 {
-	if (modo)
+	if (modo) //Modo inicializacion
 	{
-		s16 = ((s15 & 0x2000) | (s13 & 0x80000) | (s10 & 0x20000) | (s6 & 0x100000) | (s0 & 0x101)) | d >> 1;
+		s16 = ((s15 * 8192) + (s13 * 524288) + (s10 * 131072) + (s6 * 1048576) + (s0 * 257)) + d >> 1;
 		if (!s16)
-			s16 = 0x7FFFFFFF;
+			s16 = 0xffffffff;
 	}
-	else 
+	else //Modo trabajo
 	{
-		s16 = (s15 & 0x2000) | (s13 & 0x80000) | (s10 & 0x20000) | (s6 & 0x100000) | (s0 & 0x101);
+		s16 = (s15 * 8192) + (s13 * 524288) + (s10 * 131072) + (s6 * 1048576) + (s0 * 257);
 		if (!s16)
-			s16 = 0x7FFFFFFF;
+			s16 = 0xffffffff;
 	}
 
 	s0 = s1; s1 = s2; s2 = s3; s3 = s4; s4 = s5; s5 = s6; s6 = s7;s7 = s8;
@@ -101,9 +101,9 @@ int main(int argc, char* argv[])
 		FuncionF(0, 0);
 	}
 		
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 10000; i++) {
 		BR();
-		LFSR(1);
+		LFSR(0);
 		FuncionF(0, 0);
 		if(i > 99)
 			std::cout << std::bitset< 32 >(z) << ' ' << '\n';
