@@ -1,6 +1,9 @@
 #include <iostream>
 #include <bitset>
 #include <ctime>
+#include <string>  
+#include <sstream>
+#include <fstream>
 
 unsigned long s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16;
 
@@ -57,7 +60,10 @@ void init() //Inicializamos todos los registros iniciales
 	r1 = rand();
 	r2 = rand();
 
-	FuncionF(-0.2306260232230942, 0.42841027518257125);
+	double faux1 = rand()/pow(2, 32);
+	double faux2 = rand()/pow(2, 32);
+
+	FuncionF(faux1 > 0.5 ? faux1: -faux1, faux2 < 0.5 ? faux2 : -faux2);
 }
 
 void BR() //Reorganizacion de bits
@@ -92,8 +98,23 @@ void LFSR(int modo)
 	s8 = s9;s9 = s10;s10 = s11;s11 = s12;s12 = s13;s13 = s14;s14 = s15;s15 = s16;
 }
 
+size_t popcount(size_t n) {
+	std::bitset<sizeof(size_t)* CHAR_BIT> b(n);
+	return b.count();
+}
+
 int main(int argc, char* argv[])
 {
+	int avg_0 = 0;
+	int avg_1 = 0;
+	int auxAvg = 0;
+	int numIter;
+
+	printf("Introduce la cantidad de numeros que quieras generar:\n");
+	scanf_s("%d", &numIter);
+
+	std::ofstream archivo("prng.txt");
+
 	init();
 	for (int i = 0; i < 32; i++) {
 		BR();
@@ -101,13 +122,21 @@ int main(int argc, char* argv[])
 		FuncionF(0, 0);
 	}
 		
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < numIter + 100; i++) {
 		BR();
 		LFSR(0);
 		FuncionF(0, 0);
-		if(i > 99)
-			std::cout << std::bitset< 32 >(z) << ' ' << '\n';
+		if (i > 99) {
+			archivo << std::bitset< 32 >(z) << ' ' << '\n';
+			auxAvg = popcount(z);
+			avg_1 = avg_1 + auxAvg;
+			avg_0 = avg_0 + 32 - auxAvg;
+		}	
 	}
+
+	archivo << "Total 0s: " << avg_0 << " Total 1s: " << avg_1 << '\n';
+
+	archivo.close();
 
 	printf("\nPulse una tecla para finalizar");
 	getchar();
